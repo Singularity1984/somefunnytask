@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Цветочный магазин</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="{% url 'catalog' %}" class="logo">🌸 FlowerShop</a>
+            <nav class="main-nav">
+                <a href="{% url 'catalog' %}">Каталог</a>
+                <a href="{% url 'constructor' %}">Конструктор</a>
+                
+                {% if user.is_authenticated %}
+                    <a href="{% url 'cart' %}">🛒 Корзина</a>
+                    {% if user.groups.all.0.name == 'Флористы' or user.is_superuser %}
+                        <a href="{% url 'florist_dashboard' %}">Флорист</a>
+                    {% endif %}
+                    {% if user.groups.all.0.name == 'Курьеры' or user.is_superuser %}
+                        <a href="{% url 'courier_dashboard' %}">Курьер</a>
+                    {% endif %}
+                    {% if user.is_superuser %}
+                        <a href="{% url 'analytics' %}">Аналитика</a>
+                        <a href="/admin/">Админка</a>
+                    {% endif %}
+                    <a href="{% url 'profile' %}" style="font-weight: bold; color: #e91e63;">👤 {{ user.username }}</a>
+                    <a href="{% url 'logout' %}">Выйти</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Вход</a>
+                    <a href="{% url 'register' %}" class="btn-admin">Регистрация</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% if messages %}
+            <div class="container" style="margin-top: 20px;">
+                {% for message in messages %}
+                    <div style="padding: 15px; border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 15px; 
+                        {% if message.tags == 'success' %} background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; 
+                        {% else %} background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; {% endif %}">
+                        {% if message.tags == 'success' %}✅{% else %}⚠️{% endif %} {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-info">
+                <h3>🌸 FlowerShop</h3>
+                <p>Свежие цветы с доставкой к точному времени.</p>
+            </div>
+            <div class="footer-contact">
+                <p><strong>Телефон:</strong> +7 (999) 123-45-67</p>
+                <p>© 2026 Интернет-магазин цветов.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
