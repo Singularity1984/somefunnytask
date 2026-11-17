@@ -42,7 +42,7 @@ def catalog_view(request):
     if sort_by in ['price', '-price', 'name', '-name', 'id', '-id']:
         bouquets = bouquets.order_by(sort_by)
 
-    paginator = Paginator(bouquets, 20) 
+    paginator = Paginator(bouquets, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
