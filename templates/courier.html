@@ -1,25 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container" style="padding: 50px 20px;">
+<div class="container panel-page">
     <h1 class="section-title">Панель курьера</h1>
     <p>Здесь отображаются только заказы с одобренным фото.</p>
-    
-    <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 15px;">
+
+    <div class="orders-list orders-top">
         {% for order in orders %}
-        <div style="background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-left: 5px solid #4CAF50;">
+        <div class="courier-card">
             <h4>Заказ #{{ order.id }}</h4>
             <p><strong>Адрес:</strong> {{ order.address }}</p>
             <p><strong>Сумма:</strong> {{ order.total_amount }} ₽</p>
             {% if order.photos.first %}
-                <img src="{{ order.photos.first.image.url }}" style="max-width: 150px; border-radius: 10px; margin-bottom: 15px;">
+                <img src="{{ order.photos.first.image.url }}" alt="Фото букета к заказу {{ order.id }}" class="courier-photo">
             {% endif %}
             <form method="POST" action="{% url 'mark_delivered' order.id %}">
                 {% csrf_token %}
-                <button type="submit" class="btn-primary" style="padding: 10px 20px; background: #4CAF50; border: none;">Доставлено</button>
+                <button type="submit" class="btn-primary btn-small btn-green">Доставлено</button>
             </form>
         </div>
         {% empty %}
-        <div style="background: #fff; padding: 30px; border-radius: 10px; text-align: center;">
+        <div class="empty-card">
             <p>Нет заказов для доставки.</p>
         </div>
         {% endfor %}

@@ -1,20 +1,20 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container" style="padding: 100px 20px; max-width: 600px; text-align: center;">
-    <div style="background: #fff; padding: 50px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
-        <h2 class="section-title" style="margin-bottom: 20px; color: var(--primary);">Заказ успешно оформлен!</h2>
-        
-        <p style="font-size: 18px; margin-bottom: 30px;">
+<div class="container form-page form-page-narrow success-page">
+    <div class="success-box">
+        <h2 class="section-title success-title">Заказ успешно оформлен!</h2>
+
+        <p class="success-text">
             Номер вашего заказа: <strong>#{{ order.id }}</strong><br>
             Сумма: <strong>{{ order.total_amount }} ₽</strong>
         </p>
-        
-        <div style="background: #fdfbfb; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+
+        <div class="success-note">
             <p>Наш флорист уже начал собирать ваш букет. Как только он будет готов, мы загрузим его фото, и вы сможете его одобрить в личном кабинете.</p>
         </div>
 
-        <a href="{% url 'profile' %}" class="btn-primary" style="display: block; width: 100%; padding: 15px; text-decoration: none; margin-bottom: 15px;">Перейти в личный кабинет</a>
-        <a href="{% url 'catalog' %}" style="color: var(--gray); text-decoration: none;">Вернуться в каталог</a>
+        <a href="{% url 'profile' %}" class="btn-primary btn-wide">Перейти в личный кабинет</a>
+        <a href="{% url 'catalog' %}" class="link-muted link-center">Вернуться в каталог</a>
     </div>
 </div>
 {% endblock %}
