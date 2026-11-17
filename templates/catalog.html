@@ -36,7 +36,7 @@
                 <div class="card">
                     <div class="card-image">
                         {% if bouquet.photo %}
-                            <img src="{{ bouquet.photo.url }}" alt="{{ bouquet.name }}">
+                            <img src="{{ bouquet.photo.url }}" alt="{{ bouquet.name }}" width="300" height="300" loading="lazy">
                         {% else %}
                             <div class="no-photo">Нет фото</div>
                         {% endif %}
