@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container profile-page">
+    <h1 class="section-title">Личный кабинет</h1>
+    <p>Привет, <strong>{{ user.username }}</strong>!</p>
+
+    <div class="profile-body">
+        <h3>Мои заказы:</h3>
+        <a href="{% url 'export_csv' %}" class="btn-buy btn-csv">Скачать мои заказы (CSV)</a>
+        <a href="{% url 'password_change' %}" class="link-muted">Изменить пароль</a>
+        {% if orders %}
+            <div class="orders-list">
+                {% for order in orders %}
+                <div class="order-box">
+                    <div class="order-head">
+                        <div>
+                            <h4>Заказ #{{ order.id }} от {{ order.created_at|date:"d.m.Y H:i" }}</h4>
+                            <p><strong>Сумма:</strong> {{ order.total_amount }} ₽</p>
+                            <p><strong>Статус:</strong> <span class="order-status">{{ order.get_status_display }}</span></p>
+                            <p><strong>Адрес:</strong> {{ order.address }}</p>
+                        </div>
+                        {% if order.status == 'new' or order.status == 'assembly' %}
+                            <a href="{% url 'cancel_order' order.id %}" class="cancel-btn" onclick="return confirm('Вы уверены?');">Отменить заказ</a>
+                        {% endif %}
+                    </div>
+
+                    {% if order.status == 'on_approval' %}
+                        <div class="photo-check">
+                            <p><strong>Проверьте фото букета:</strong></p>
+                            {% for photo in order.photos.all %}
+                                {% if not photo.is_approved %}
+                                    <img src="{{ photo.image.url }}" alt="Фото букета к заказу {{ order.id }}" class="order-photo"><br>
+                                    <form method="POST" action="{% url 'approve_photo' photo.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-primary btn-small">Одобрить и передать курьеру</button>
+                                    </form>
+                                {% else %}
+                                    <p class="photo-ok">Фото одобрено, курьер выехал!</p>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>У вас пока нет заказов. <a href="{% url 'catalog' %}" class="link-primary">Перейти в каталог</a></p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="padding: 50px 20px;">
+    <h1 class="section-title" style="text-align: center; margin-bottom: 30px;">Собрать свой букет</h1>
+
+    <form method="POST" class="constructor-form" style="max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+        {% csrf_token %}
+        
+        <h3 style="margin-bottom: 15px; color: var(--dark);">1. Выберите цветы</h3>
+        <div class="flowers-grid" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px;">
+            {% for variety in varieties %}
+            <div class="flower-item" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border);">
+                <span style="font-weight: 600;">{{ variety.name }} <span style="color: var(--gray); font-weight: 400;">({{ variety.sale_price }} ₽/шт)</span></span>
+                <input type="number" name="variety_{{ variety.id }}" value="0" min="0" max="101" style="width: 80px; padding: 8px; border: 1px solid var(--border); border-radius: 5px; text-align: center;">
+            </div>
+            {% endfor %}
+        </div>
+
+        <h3 style="margin-bottom: 15px; color: var(--dark);">2. Выберите упаковку</h3>
+        <div style="margin-bottom: 30px;">
+            <select name="packaging" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-family: var(--font-main); font-size: 16px; outline: none; cursor: pointer; background: #fff;">
+                <option value="">Без упаковки (крафтовая бумага в подарок)</option>
+                {% for pack in packagings %}
+                <option value="{{ pack.id }}">{{ pack.name }} (+{{ pack.price }} ₽)</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <h3 style="margin-bottom: 15px; color: var(--dark);">3. Текст открытки</h3>
+        <div style="margin-bottom: 30px;">
+            <textarea name="card_text" placeholder="Ваши пожелания..." style="width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 10px; font-family: var(--font-main); font-size: 16px; resize: vertical; min-height: 100px; outline: none;"></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%; padding: 15px; border-radius: 10px; font-size: 18px;">Добавить в корзину</button>
+    </form>
+</div>
+{% endblock %}

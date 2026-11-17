@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="padding: 50px 20px;">
+    <h1 class="section-title">Панель флориста</h1>
+    <p>Здесь вы видите заказы, которые нужно собрать, и загружаете фото.</p>
+    
+    {% for order in orders %}
+    <div class="order-card" style="background:#fff; padding:20px; margin-bottom:20px; border-radius:10px;">
+        <h3>Заказ #{{ order.id }} - Статус: {{ order.get_status_display }}</h3>
+        <p>Адрес: {{ order.address }}</p>
+        <p>Состав: 
+            {% for item in order.items.all %}
+                {{ item.custom_bouquet }} ({{ item.quantity }} шт)
+            {% endfor %}
+        </p>
+        
+        <form method="POST" action="{% url 'upload_photo' order.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="photo" accept="image/*" required>
+            <button type="submit" class="btn-search">Загрузить фото и отправить клиенту</button>
+        </form>
+    </div>
+    {% empty %}
+    <p>Нет активных заказов.</p>
+    {% endfor %}
+</div>
+{% endblock %}

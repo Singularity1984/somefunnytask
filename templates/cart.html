@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container cart-page">
+    <h2 class="section-title title-center">Ваша корзина</h2>
+
+    {% if cart and cart.items.all %}
+        <div class="cart-box">
+
+            {% for item in cart.items.all %}
+                <div class="cart-row">
+                    <div class="cart-info">
+                        <h4 class="cart-name">{{ item.variety.name }}</h4>
+                        <p class="cart-price">{{ item.variety.sale_price }} ₽ / шт.</p>
+                    </div>
+                    <div class="cart-controls">
+                        <a href="{% url 'decrease_item' item.id %}" class="qty-btn">-</a>
+
+                        <span class="qty-value">{{ item.stems_count }}</span>
+
+                        <a href="{% url 'increase_item' item.id %}" class="qty-btn">+</a>
+
+                        <a href="{% url 'remove_item' item.id %}" class="remove-btn" title="Удалить из корзины">Удалить</a>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% if cart.packaging %}
+            <div class="cart-pack">
+                <span>Упаковка: {{ cart.packaging.name }}</span>
+                <span>+{{ cart.packaging.price }} ₽</span>
+            </div>
+            {% endif %}
+
+            <div class="cart-total">
+                <h3>Итого:</h3>
+                <h3 class="cart-sum">{{ cart.total_price }} ₽</h3>
+            </div>
+
+            <a href="{% url 'checkout' cart.id %}" class="btn-primary btn-wide">Перейти к оформлению</a>
+        </div>
+    {% else %}
+        <div class="empty-cart">
+            <h3>Ваша корзина пуста</h3>
+            <a href="{% url 'catalog' %}" class="btn-primary btn-inline">Перейти в каталог</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

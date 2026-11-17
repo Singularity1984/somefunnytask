@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="padding: 50px 20px; max-width: 450px;">
+    <h2 class="section-title" style="text-align: center;">Вход в систему</h2>
+    
+    <form method="POST" style="background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">{{ field.label }}</label>
+                <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" class="styled-input" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: var(--font-main); font-size: 16px;" required>
+                
+                {% for error in field.errors %}
+                    <small style="color: red; display: block; margin-top: 5px;">{{ error }}</small>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">Войти</button>
+    </form>
+    
+    <p style="text-align: center; margin-top: 15px;">Нет аккаунта? <a href="{% url 'register' %}" style="color: var(--primary); font-weight: bold;">Зарегистрироваться</a></p>
+</div>
+{% endblock %}
