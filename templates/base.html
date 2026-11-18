@@ -28,7 +28,7 @@
                     {% endif %}
                     {% if user.is_superuser %}
                         <a href="{% url 'analytics' %}">Аналитика</a>
-                        <a href="/admin/">Админка</a>
+                        <a href="{% url 'admin:index' %}">Админка</a>
                     {% endif %}
                     <a href="{% url 'profile' %}" class="nav-user">{{ user.username }}</a>
                     <a href="{% url 'logout' %}">Выйти</a>

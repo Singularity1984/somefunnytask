@@ -29,7 +29,7 @@
                             <p><strong>Проверьте фото букета:</strong></p>
                             {% for photo in order.photos.all %}
                                 {% if not photo.is_approved %}
-                                    <img src="{{ photo.image.url }}" alt="Фото букета к заказу {{ order.id }}" class="order-photo"><br>
+                                    <img src="{{ photo.image.url }}" alt="Фото букета к заказу {{ order.id }}" width="300" height="300" loading="lazy" class="order-photo"><br>
                                     <form method="POST" action="{% url 'approve_photo' photo.id %}">
                                         {% csrf_token %}
                                         <button type="submit" class="btn-primary btn-small">Одобрить и передать курьеру</button>

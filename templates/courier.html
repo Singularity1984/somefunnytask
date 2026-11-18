@@ -11,7 +11,7 @@
             <p><strong>Адрес:</strong> {{ order.address }}</p>
             <p><strong>Сумма:</strong> {{ order.total_amount }} ₽</p>
             {% if order.photos.first %}
-                <img src="{{ order.photos.first.image.url }}" alt="Фото букета к заказу {{ order.id }}" class="courier-photo">
+                <img src="{{ order.photos.first.image.url }}" alt="Фото букета к заказу {{ order.id }}" width="300" height="300" loading="lazy" class="courier-photo">
             {% endif %}
             <form method="POST" action="{% url 'mark_delivered' order.id %}">
                 {% csrf_token %}
