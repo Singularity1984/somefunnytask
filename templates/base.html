@@ -14,7 +14,12 @@
     <header class="site-header">
         <div class="container header-inner">
             <a href="{% url 'catalog' %}" class="logo">FlowerShop</a>
-            <nav class="main-nav">
+            <button type="button" class="burger" id="burger-btn" aria-label="Открыть меню">
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+            </button>
+            <nav class="main-nav" id="main-nav">
                 <a href="{% url 'catalog' %}">Каталог</a>
                 <a href="{% url 'constructor' %}">Конструктор</a>
 
@@ -66,5 +71,6 @@
             </div>
         </div>
     </footer>
+    <script src="{% static 'js/validation.js' %}"></script>
 </body>
 </html>

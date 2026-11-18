@@ -346,3 +346,23 @@ def remove_item(request, item_id):
     item.delete()
     update_cart_total(cart)
     return redirect('cart')
+
+def search_api(request):
+    text = request.GET.get('q', '')
+    bouquets = ReadyBouquet.objects.filter(is_active=True)
+
+    if text:
+        bouquets = bouquets.filter(name__icontains=text)
+
+    bouquets = bouquets.order_by('-id')[:20]
+
+    data = []
+    for bouquet in bouquets:
+        data.append({
+            'id': bouquet.id,
+            'name': bouquet.name,
+            'price': str(bouquet.price),
+            'photo': bouquet.photo.url if bouquet.photo else '',
+        })
+
+    return JsonResponse({'bouquets': data})
