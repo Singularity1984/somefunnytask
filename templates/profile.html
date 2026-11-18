@@ -5,19 +5,22 @@
     <p>Привет, <strong>{{ user.username }}</strong>!</p>
 
     <div class="profile-body">
-        <h3>Мои заказы:</h3>
+        <h2>Мои заказы:</h2>
         <a href="{% url 'export_csv' %}" class="btn-buy btn-csv">Скачать мои заказы (CSV)</a>
         <a href="{% url 'password_change' %}" class="link-muted">Изменить пароль</a>
         {% if orders %}
             <div class="orders-list">
                 {% for order in orders %}
-                <div class="order-box">
+                <article class="order-box">
                     <div class="order-head">
                         <div>
-                            <h4>Заказ #{{ order.id }} от {{ order.created_at|date:"d.m.Y" }}</h4>
+                            <h3>Заказ #{{ order.id }} от {{ order.created_at|date:"d.m.Y" }}</h3>
                             <p><strong>Сумма:</strong> {{ order.total_amount|floatformat:2 }} ₽</p>
                             <p><strong>Статус:</strong> <span class="order-status">{{ order.get_status_display }}</span></p>
                             <p><strong>Адрес:</strong> {{ order.address }}</p>
+                            {% if order.phone %}
+                                <p><strong>Телефон:</strong> {{ order.phone }}</p>
+                            {% endif %}
                         </div>
                         {% if order.status == 'new' or order.status == 'assembly' %}
                             <a href="{% url 'cancel_order' order.id %}" class="cancel-btn" onclick="return confirm('Вы уверены?');">Отменить заказ</a>
@@ -40,7 +43,7 @@
                             {% endfor %}
                         </div>
                     {% endif %}
-                </div>
+                </article>
                 {% endfor %}
             </div>
         {% else %}

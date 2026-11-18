@@ -3,14 +3,24 @@
 <div class="container form-page form-page-small">
     <h1 class="section-title title-center">Вход в систему</h1>
 
-    <form method="POST" class="form-box">
+    <form method="POST" class="form-box" data-check="form" novalidate>
         {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="form-error-box">
+                {% for error in form.non_field_errors %}
+                    <p class="field-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
 
         {% for field in form %}
             <div class="field-row">
-                <label class="field-label">{{ field.label }}</label>
-                <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" class="styled-input field-input" required>
-
+                <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <div class="field-help">{{ field.help_text }}</div>
+                {% endif %}
                 {% for error in field.errors %}
                     <small class="field-error">{{ error }}</small>
                 {% endfor %}

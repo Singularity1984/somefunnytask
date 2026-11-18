@@ -6,8 +6,8 @@
 
     <div class="orders-list">
         {% for order in orders %}
-        <div class="order-card">
-            <h3>Заказ #{{ order.id }} - Статус: {{ order.get_status_display }}</h3>
+        <article class="order-card">
+            <h2 class="card-title">Заказ #{{ order.id }} - {{ order.get_status_display }}</h2>
             <p>Адрес: {{ order.address }}</p>
             <p>Состав:
                 {% for item in order.items.all %}
@@ -17,10 +17,11 @@
 
             <form method="POST" action="{% url 'upload_photo' order.id %}" enctype="multipart/form-data" class="upload-form">
                 {% csrf_token %}
-                <input type="file" name="photo" accept="image/*" required class="file-input">
+                <label class="field-label" for="photo-{{ order.id }}">Фото букета</label>
+                <input type="file" id="photo-{{ order.id }}" name="photo" accept="image/*" required class="file-input">
                 <button type="submit" class="btn-search">Загрузить фото и отправить клиенту</button>
             </form>
-        </div>
+        </article>
         {% empty %}
         <p>Нет активных заказов.</p>
         {% endfor %}

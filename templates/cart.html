@@ -7,19 +7,19 @@
         <div class="cart-box">
 
             {% for item in cart.items.all %}
-                <div class="cart-row">
+                <div class="cart-row" data-item="{{ item.id }}">
                     <div class="cart-info">
-                        <h4 class="cart-name">{{ item.variety.name }}</h4>
+                        <h2 class="cart-name">{{ item.variety.name }}</h2>
                         <p class="cart-price">{{ item.variety.sale_price|floatformat:2 }} ₽ / шт.</p>
                     </div>
                     <div class="cart-controls">
-                        <a href="{% url 'decrease_item' item.id %}" class="qty-btn">-</a>
+                        <a href="{% url 'decrease_item' item.id %}" class="qty-btn" data-action="decrease">-</a>
 
                         <span class="qty-value">{{ item.stems_count }}</span>
 
-                        <a href="{% url 'increase_item' item.id %}" class="qty-btn">+</a>
+                        <a href="{% url 'increase_item' item.id %}" class="qty-btn" data-action="increase">+</a>
 
-                        <a href="{% url 'remove_item' item.id %}" class="remove-btn" title="Удалить из корзины">Удалить</a>
+                        <a href="{% url 'remove_item' item.id %}" class="remove-btn" data-action="remove" title="Удалить из корзины">Удалить</a>
                     </div>
                 </div>
             {% endfor %}
@@ -32,15 +32,15 @@
             {% endif %}
 
             <div class="cart-total">
-                <h3>Итого:</h3>
-                <h3 class="cart-sum">{{ cart.total_price|floatformat:2 }} ₽</h3>
+                <h2 class="cart-sum-label">Итого:</h2>
+                <h2 class="cart-sum">{{ cart.total_price|floatformat:2 }} ₽</h2>
             </div>
 
             <a href="{% url 'checkout' cart.id %}" class="btn-primary btn-wide">Перейти к оформлению</a>
         </div>
     {% else %}
         <div class="empty-cart">
-            <h3>Ваша корзина пуста</h3>
+            <h2>Ваша корзина пуста</h2>
             <a href="{% url 'catalog' %}" class="btn-primary btn-inline">Перейти в каталог</a>
         </div>
     {% endif %}

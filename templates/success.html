@@ -6,7 +6,7 @@
 
         <p class="success-text">
             Номер вашего заказа: <strong>#{{ order.id }}</strong><br>
-            Сумма: <strong>{{ order.total_amount }} ₽</strong>
+            Сумма: <strong>{{ order.total_amount|floatformat:2 }} ₽</strong>
         </p>
 
         <div class="success-note">

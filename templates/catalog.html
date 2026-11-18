@@ -9,18 +9,22 @@
         </div>
     </section>
 
-    <section id="catalog" class="catalog-section container">
+    <section id="catalog" class="catalog-section container" data-search-url="{% url 'search_api' %}" data-buy-url="{% url 'buy_ready' 0 %}" data-detail-url="{% url 'bouquet_detail' 0 %}">
 
         <div class="toolbar">
             <h2 class="section-title">Наши букеты</h2>
 
-            <form method="GET" action="" class="filter-form">
+            <form method="GET" class="filter-form">
                 <div class="search-box">
+                    <label class="visually-hidden" for="search-input">Поиск по названию</label>
                     <input type="text" name="search" id="search-input" placeholder="Поиск по названию..." value="{{ search_query }}">
-                    <input type="text" name="color" placeholder="Цвет цветов..." value="{{ color_filter }}">
+
+                    <label class="visually-hidden" for="color-input">Цвет цветов</label>
+                    <input type="text" name="color" id="color-input" placeholder="Цвет цветов..." value="{{ color_filter }}">
                 </div>
 
-                <select name="sort" class="sort-select">
+                <label class="visually-hidden" for="sort-input">Сортировка</label>
+                <select name="sort" id="sort-input" class="sort-select">
                     <option value="-id" {% if sort_by == '-id' %}selected{% endif %}>Сначала новые</option>
                     <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Цена (по возрастанию)</option>
                     <option value="-price" {% if sort_by == '-price' %}selected{% endif %}>Цена (по убыванию)</option>
@@ -31,11 +35,11 @@
             </form>
         </div>
 
-        <div id="loading" style="display:none">Загрузка...</div>
+        <p id="loading" class="loading-line" hidden>Загрузка...</p>
 
         <div class="catalog-grid" id="catalog-grid">
             {% for bouquet in page_obj %}
-                <div class="card">
+                <article class="card">
                     <div class="card-image">
                         {% if bouquet.photo %}
                             <img src="{{ bouquet.photo.url }}" alt="{{ bouquet.name }}" width="300" height="300" loading="lazy">
@@ -44,11 +48,11 @@
                         {% endif %}
                     </div>
                     <div class="card-body">
-                        <h3>{{ bouquet.name|truncatechars:50 }}</h3>
+                        <h3><a href="{% url 'bouquet_detail' bouquet.id %}" class="card-link">{{ bouquet.name|truncatechars:50 }}</a></h3>
                         <p class="price">{{ bouquet.price|floatformat:2 }} ₽</p>
                         <a href="{% url 'buy_ready' bouquet.id %}" class="btn-buy card-btn">В корзину</a>
                     </div>
-                </div>
+                </article>
             {% empty %}
                 <div class="empty-state">
                     <p>По вашему запросу ничего не найдено</p>

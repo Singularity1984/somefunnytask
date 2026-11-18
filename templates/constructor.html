@@ -3,32 +3,45 @@
 <div class="container form-page">
     <h1 class="section-title title-center">Собрать свой букет</h1>
 
-    <form method="POST" class="form-box constructor-form">
+    <form method="POST" class="form-box constructor-form" data-check="form" novalidate>
         {% csrf_token %}
 
-        <h3 class="field-title">1. Выберите цветы</h3>
+        {% if form.non_field_errors %}
+            <div class="form-error-box">
+                {% for error in form.non_field_errors %}
+                    <p class="field-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <h2 class="field-title">1. Выберите цветы</h2>
         <div class="flowers-grid block-gap">
             {% for variety in varieties %}
             <div class="flower-item">
-                <span class="flower-name">{{ variety.name }} <span class="flower-price">({{ variety.sale_price }} ₽/шт)</span></span>
-                <input type="number" name="variety_{{ variety.id }}" value="0" min="0" max="101" class="flower-count">
+                <label class="flower-name" for="variety-{{ variety.id }}">
+                    {{ variety.name }} <span class="flower-price">({{ variety.sale_price|floatformat:2 }} ₽/шт)</span>
+                </label>
+                <input type="number" id="variety-{{ variety.id }}" name="variety_{{ variety.id }}" value="0" min="0" max="101" class="flower-count">
             </div>
             {% endfor %}
         </div>
 
-        <h3 class="field-title">2. Выберите упаковку</h3>
+        <h2 class="field-title">2. Выберите упаковку</h2>
         <div class="block-gap">
-            <select name="packaging" class="form-select">
-                <option value="">Без упаковки (крафтовая бумага в подарок)</option>
-                {% for pack in packagings %}
-                <option value="{{ pack.id }}">{{ pack.name }} (+{{ pack.price }} ₽)</option>
-                {% endfor %}
-            </select>
+            <label class="field-label" for="{{ form.packaging.id_for_label }}">{{ form.packaging.label }}</label>
+            {{ form.packaging }}
+            {% for error in form.packaging.errors %}
+                <small class="field-error">{{ error }}</small>
+            {% endfor %}
         </div>
 
-        <h3 class="field-title">3. Текст открытки</h3>
+        <h2 class="field-title">3. Текст открытки</h2>
         <div class="block-gap">
-            <textarea name="card_text" placeholder="Ваши пожелания..." class="form-textarea"></textarea>
+            <label class="field-label" for="{{ form.card_text.id_for_label }}">{{ form.card_text.label }}</label>
+            {{ form.card_text }}
+            {% for error in form.card_text.errors %}
+                <small class="field-error">{{ error }}</small>
+            {% endfor %}
         </div>
 
         <button type="submit" class="btn-primary btn-wide btn-lg">Добавить в корзину</button>

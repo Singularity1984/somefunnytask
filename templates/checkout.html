@@ -4,23 +4,41 @@
     <h1 class="section-title title-center">Оформление заказа</h1>
 
     <div class="form-box box-gap">
-        <h3>Ваш букет готов к заказу!</h3>
-        <p class="checkout-sum">Итоговая сумма: <strong class="text-primary">{{ bouquet.total_price }} ₽</strong></p>
+        <h2 class="field-title">Ваш букет готов к заказу</h2>
+        <p class="checkout-sum">Итоговая сумма: <strong class="text-primary">{{ bouquet.total_price|floatformat:2 }} ₽</strong></p>
     </div>
 
-    <form method="POST" class="form-box">
+    <form method="POST" class="form-box" data-check="form" novalidate>
         {% csrf_token %}
 
-        <h3 class="field-title">Адрес доставки</h3>
-        <input type="text" name="address" required placeholder="Город, улица, дом, квартира" class="form-input form-input-gap">
+        {% if form.non_field_errors %}
+            <div class="form-error-box">
+                {% for error in form.non_field_errors %}
+                    <p class="field-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
 
-        <h3 class="field-title">Интервал доставки</h3>
-        <select name="slot" required class="form-select form-input-gap">
-            <option value="">-- Выберите удобное время --</option>
-            {% for slot in slots %}
-                <option value="{{ slot.id }}">{{ slot.date }} с {{ slot.start_time }} до {{ slot.end_time }}</option>
-            {% endfor %}
-        </select>
+        <h2 class="field-title">Адрес доставки</h2>
+        <label class="field-label" for="{{ form.address.id_for_label }}">{{ form.address.label }}</label>
+        {{ form.address }}
+        {% for error in form.address.errors %}
+            <small class="field-error">{{ error }}</small>
+        {% endfor %}
+
+        <h2 class="field-title">Контактный телефон</h2>
+        <label class="field-label" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+        {{ form.phone }}
+        {% for error in form.phone.errors %}
+            <small class="field-error">{{ error }}</small>
+        {% endfor %}
+
+        <h2 class="field-title">Интервал доставки</h2>
+        <label class="field-label" for="{{ form.slot.id_for_label }}">{{ form.slot.label }}</label>
+        {{ form.slot }}
+        {% for error in form.slot.errors %}
+            <small class="field-error">{{ error }}</small>
+        {% endfor %}
 
         <button type="submit" class="btn-primary btn-wide btn-lg">Подтвердить заказ</button>
     </form>

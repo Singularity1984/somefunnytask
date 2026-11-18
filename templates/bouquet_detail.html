@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container detail-page">
+    <nav class="breadcrumbs">
+        <a href="{% url 'catalog' %}">Каталог</a>
+        <span>/</span>
+        <span>{{ bouquet.name }}</span>
+    </nav>
+
+    <article class="detail-box">
+        <div class="detail-photo">
+            {% if bouquet.photo %}
+                <img src="{{ bouquet.photo.url }}" alt="{{ bouquet.name }}" width="300" height="300" loading="lazy">
+            {% else %}
+                <div class="no-photo">Нет фото</div>
+            {% endif %}
+        </div>
+
+        <div class="detail-info">
+            <h1 class="section-title">{{ bouquet.name }}</h1>
+            <p class="price">{{ bouquet.price|floatformat:2 }} ₽</p>
+            <p class="detail-text">{{ bouquet.description|default:"Букет собирается флористом из свежих цветов." }}</p>
+
+            <h2 class="field-title">Состав</h2>
+            <ul class="recipe-list">
+                {% for item in bouquet.recipe.all %}
+                    <li>{{ item.variety.name }} - {{ item.stems_count }} шт</li>
+                {% empty %}
+                    <li>Состав уточняется у флориста</li>
+                {% endfor %}
+            </ul>
+
+            <a href="{% url 'buy_ready' bouquet.id %}" class="btn-primary btn-wide">В корзину</a>
+        </div>
+    </article>
+</div>
+{% endblock %}

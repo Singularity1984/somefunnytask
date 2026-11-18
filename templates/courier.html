@@ -6,10 +6,13 @@
 
     <div class="orders-list orders-top">
         {% for order in orders %}
-        <div class="courier-card">
-            <h4>Заказ #{{ order.id }}</h4>
+        <article class="courier-card">
+            <h2 class="card-title">Заказ #{{ order.id }}</h2>
             <p><strong>Адрес:</strong> {{ order.address }}</p>
-            <p><strong>Сумма:</strong> {{ order.total_amount }} ₽</p>
+            <p><strong>Сумма:</strong> {{ order.total_amount|floatformat:2 }} ₽</p>
+            {% if order.phone %}
+                <p><strong>Телефон:</strong> {{ order.phone }}</p>
+            {% endif %}
             {% if order.photos.first %}
                 <img src="{{ order.photos.first.image.url }}" alt="Фото букета к заказу {{ order.id }}" width="300" height="300" loading="lazy" class="courier-photo">
             {% endif %}
@@ -17,7 +20,7 @@
                 {% csrf_token %}
                 <button type="submit" class="btn-primary btn-small btn-green">Доставлено</button>
             </form>
-        </div>
+        </article>
         {% empty %}
         <div class="empty-card">
             <p>Нет заказов для доставки.</p>
