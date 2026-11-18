@@ -14,8 +14,8 @@
                 <div class="order-box">
                     <div class="order-head">
                         <div>
-                            <h4>Заказ #{{ order.id }} от {{ order.created_at|date:"d.m.Y H:i" }}</h4>
-                            <p><strong>Сумма:</strong> {{ order.total_amount }} ₽</p>
+                            <h4>Заказ #{{ order.id }} от {{ order.created_at|date:"d.m.Y" }}</h4>
+                            <p><strong>Сумма:</strong> {{ order.total_amount|floatformat:2 }} ₽</p>
                             <p><strong>Статус:</strong> <span class="order-status">{{ order.get_status_display }}</span></p>
                             <p><strong>Адрес:</strong> {{ order.address }}</p>
                         </div>

@@ -42,8 +42,8 @@
                         {% endif %}
                     </div>
                     <div class="card-body">
-                        <h3>{{ bouquet.name }}</h3>
-                        <p class="price">{{ bouquet.price }} ₽</p>
+                        <h3>{{ bouquet.name|truncatechars:50 }}</h3>
+                        <p class="price">{{ bouquet.price|floatformat:2 }} ₽</p>
                         <a href="{% url 'buy_ready' bouquet.id %}" class="btn-buy card-btn">В корзину</a>
                     </div>
                 </div>

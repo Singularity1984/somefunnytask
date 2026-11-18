@@ -10,7 +10,7 @@
                 <div class="cart-row">
                     <div class="cart-info">
                         <h4 class="cart-name">{{ item.variety.name }}</h4>
-                        <p class="cart-price">{{ item.variety.sale_price }} ₽ / шт.</p>
+                        <p class="cart-price">{{ item.variety.sale_price|floatformat:2 }} ₽ / шт.</p>
                     </div>
                     <div class="cart-controls">
                         <a href="{% url 'decrease_item' item.id %}" class="qty-btn">-</a>
@@ -27,13 +27,13 @@
             {% if cart.packaging %}
             <div class="cart-pack">
                 <span>Упаковка: {{ cart.packaging.name }}</span>
-                <span>+{{ cart.packaging.price }} ₽</span>
+                <span>+{{ cart.packaging.price|floatformat:2 }} ₽</span>
             </div>
             {% endif %}
 
             <div class="cart-total">
                 <h3>Итого:</h3>
-                <h3 class="cart-sum">{{ cart.total_price }} ₽</h3>
+                <h3 class="cart-sum">{{ cart.total_price|floatformat:2 }} ₽</h3>
             </div>
 
             <a href="{% url 'checkout' cart.id %}" class="btn-primary btn-wide">Перейти к оформлению</a>
