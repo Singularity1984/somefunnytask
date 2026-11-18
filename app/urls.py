@@ -1,7 +1,7 @@
-from django.urls import path
+from django.urls import path, reverse_lazy
 from django.contrib.auth import views as auth_views
 from . import views
-from .forms import LoginForm
+from .forms import LoginForm, PasswordForm
 
 urlpatterns = [
     path('', views.catalog_view, name='catalog'),
@@ -37,5 +37,5 @@ urlpatterns = [
     path('cart/decrease/<int:item_id>/', views.decrease_item, name='decrease_item'),
     path('cart/remove/<int:item_id>/', views.remove_item, name='remove_item'),
 
-    path('password-change/', auth_views.PasswordChangeView.as_view(template_name='password_change.html', success_url='/profile/'), name='password_change'),
+    path('password-change/', auth_views.PasswordChangeView.as_view(template_name='password_change.html', form_class=PasswordForm, success_url=reverse_lazy('profile')), name='password_change'),
 ]

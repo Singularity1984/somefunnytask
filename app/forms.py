@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from .models import DeliverySlot, Packaging
 
 
@@ -97,3 +97,10 @@ class PhotoUploadForm(forms.Form):
         if photo.size > 5 * 1024 * 1024:
             raise forms.ValidationError("Файл слишком большой, максимум 5 МБ.")
         return photo
+
+
+class PasswordForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name in ('old_password', 'new_password1', 'new_password2'):
+            self.fields[name].widget.attrs.update({'class': 'styled-input field-input'})

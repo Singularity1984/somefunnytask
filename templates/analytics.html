@@ -22,14 +22,14 @@
         </article>
     </div>
 
-    <div class="chart-box">
+    <div class="chart-box" id="chart-box" data-url="{% url 'dashboard_api' %}">
         <canvas id="myChart"></canvas>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    fetch('/api/dashboard/')
+    fetch(document.getElementById('chart-box').dataset.url)
         .then(response => response.json())
         .then(data => {
             document.getElementById('total-orders').innerText = data.total_orders;
