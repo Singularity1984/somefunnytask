@@ -14,7 +14,10 @@
 <body>
     <header class="site-header">
         <div class="container header-inner">
-            <a href="{% url 'catalog' %}" class="logo">FlowerShop</a>
+            <a href="{% url 'catalog' %}" class="logo">
+                <img src="{% static 'img/logo.svg' %}" alt="" width="28" height="28" class="logo-icon">
+                FlowerShop
+            </a>
             <button type="button" class="burger" id="burger-btn" aria-label="Открыть меню">
                 <span class="burger-line"></span>
                 <span class="burger-line"></span>
@@ -66,11 +69,14 @@
     <footer class="site-footer">
         <div class="container footer-inner">
             <div class="footer-info">
-                <p class="footer-logo">FlowerShop</p>
+                <p class="footer-logo">
+                    <img src="{% static 'img/logo.svg' %}" alt="" width="24" height="24" class="logo-icon">
+                    FlowerShop
+                </p>
                 <p>Свежие цветы с доставкой к точному времени.</p>
             </div>
             <div class="footer-contact">
-                <p><strong>Телефон:</strong> +7 (999) 123-45-67</p>
+                <p><strong>Телефон:</strong> +7 (8422) 48-21-15</p>
                 <p>© 2026 Интернет-магазин цветов.</p>
             </div>
         </div>
