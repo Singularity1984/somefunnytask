@@ -1,11 +1,16 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
+from .forms import LoginForm
 
 urlpatterns = [
     path('', views.catalog_view, name='catalog'),
     path('constructor/', views.constructor_view, name='constructor'),
     path('cart/', views.cart_view, name='cart'),
+    path('bouquet/<int:bouquet_id>/', views.bouquet_detail, name='bouquet_detail'),
+    path('search/', views.search_page, name='search_page'),
+    path('about/', views.about_page, name='about'),
+    path('contacts/', views.contacts_page, name='contacts'),
     path('buy/<int:bouquet_id>/', views.buy_ready_bouquet, name='buy_ready'),
     path('checkout/<int:bouquet_id>/', views.checkout_view, name='checkout'),
     path('success/<int:order_id>/', views.order_success, name='order_success'),
@@ -20,7 +25,7 @@ urlpatterns = [
     path('api/dashboard/', views.dashboard_api, name='dashboard_api'),
     path('api/search/', views.search_api, name='search_api'),
     
-    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('login/', auth_views.LoginView.as_view(template_name='login.html', authentication_form=LoginForm), name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register_view, name='register'),
     path('profile/', views.profile_view, name='profile'),

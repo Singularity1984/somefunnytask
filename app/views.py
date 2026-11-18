@@ -3,15 +3,14 @@ from django.db import transaction
 from django.db.models import Sum, Avg, Count
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.core.files.base import ContentFile
 import csv
 from .models import *
+from .forms import CheckoutForm, ConstructorForm, PhotoUploadForm, RegisterForm
 
 def is_florist(user):
     return user.groups.filter(name='Флористы').exists() or user.is_superuser
@@ -59,48 +58,59 @@ def catalog_view(request):
 def constructor_view(request):
     varieties = FlowerVariety.objects.all()
     packagings = Packaging.objects.all()
+    form = ConstructorForm(request.POST or None)
 
     if request.method == 'POST':
-        packaging_id = request.POST.get('packaging')
-        card_text = request.POST.get('card_text', '')
-        
-        total_price = 0
-        selected_items = []
-        
-        for key, value in request.POST.items():
-            if key.startswith('variety_') and value.isdigit() and int(value) > 0:
-                variety_id = key.split('_')[1]
-                stems_count = int(value)
-                variety = FlowerVariety.objects.get(id=variety_id)
-                selected_items.append((variety, stems_count))
-                total_price += variety.sale_price * stems_count
+        if form.is_valid():
+            packaging = form.cleaned_data['packaging']
+            card_text = form.cleaned_data['card_text']
 
-        if not selected_items:
-            messages.error(request, "Вы не выбрали ни одного цветка!")
-            return render(request, 'constructor.html', {'varieties': varieties, 'packagings': packagings})
+            total_price = 0
+            selected_items = []
 
-        custom_bouquet = CustomBouquet.objects.create(
-            user=request.user if request.user.is_authenticated else None,
-            packaging_id=packaging_id if packaging_id else None,
-            card_text=card_text
-        )
-        
-        for variety, stems_count in selected_items:
-            CustomBouquetItem.objects.create(
-                custom_bouquet=custom_bouquet,
-                variety=variety,
-                stems_count=stems_count
+            for key, value in request.POST.items():
+                if key.startswith('variety_') and value.isdigit() and int(value) > 0:
+                    variety_id = key.split('_')[1]
+                    stems_count = int(value)
+                    variety = FlowerVariety.objects.get(id=variety_id)
+                    selected_items.append((variety, stems_count))
+                    total_price += variety.sale_price * stems_count
+
+            if not selected_items:
+                messages.error(request, "Вы не выбрали ни одного цветка!")
+                return render(request, 'constructor.html', {
+                    'varieties': varieties,
+                    'packagings': packagings,
+                    'form': form,
+                })
+
+            custom_bouquet = CustomBouquet.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                packaging=packaging,
+                card_text=card_text
             )
 
-        if packaging_id:
-            total_price += Packaging.objects.get(id=packaging_id).price
-            
-        custom_bouquet.total_price = total_price
-        custom_bouquet.save()
-        
-        return redirect('cart')
+            for variety, stems_count in selected_items:
+                CustomBouquetItem.objects.create(
+                    custom_bouquet=custom_bouquet,
+                    variety=variety,
+                    stems_count=stems_count
+                )
 
-    return render(request, 'constructor.html', {'varieties': varieties, 'packagings': packagings})
+            if packaging:
+                total_price += packaging.price
+
+            custom_bouquet.total_price = total_price
+            custom_bouquet.save()
+
+            messages.success(request, "Букет добавлен в корзину.")
+            return redirect('cart')
+
+    return render(request, 'constructor.html', {
+        'varieties': varieties,
+        'packagings': packagings,
+        'form': form,
+    })
 
 @login_required
 def buy_ready_bouquet(request, bouquet_id):
@@ -140,16 +150,18 @@ def cart_view(request):
 def checkout_view(request, bouquet_id):
     custom_bouquet = get_object_or_404(CustomBouquet, id=bouquet_id, user=request.user)
     slots = DeliverySlot.objects.all()
-    
-    if request.method == 'POST':
-        address = request.POST.get('address')
-        slot_id = request.POST.get('slot')
-        
+    form = CheckoutForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        address = form.cleaned_data['address']
+        slot = form.cleaned_data['slot']
+
         order = Order.objects.create(
             user=request.user,
             status='reserved',
-            delivery_slot_id=slot_id,
+            delivery_slot=slot,
             address=address,
+            phone=form.cleaned_data['phone'],
             total_amount=custom_bouquet.total_price
         )
         
@@ -194,9 +206,10 @@ def checkout_view(request, bouquet_id):
             fail_silently=False,
         )
 
+        messages.success(request, "Заказ оформлен, флорист приступил к сборке.")
         return redirect('order_success', order_id=order.id)
 
-    return render(request, 'checkout.html', {'bouquet': custom_bouquet, 'slots': slots})
+    return render(request, 'checkout.html', {'bouquet': custom_bouquet, 'slots': slots, 'form': form})
 
 def order_success(request, order_id):
     order = get_object_or_404(Order, id=order_id)
@@ -248,15 +261,15 @@ def florist_dashboard(request):
 @user_passes_test(is_florist, login_url='login')
 def upload_photo(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    if request.method == 'POST' and request.FILES.get('photo'):
-        photo = request.FILES['photo']
-        if photo.size > 5 * 1024 * 1024:
-            messages.error(request, "Файл слишком большой (макс 5 МБ)")
-        else:
-            BouquetPhoto.objects.create(order=order, image=photo)
+    if request.method == 'POST':
+        form = PhotoUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            BouquetPhoto.objects.create(order=order, image=form.cleaned_data['photo'])
             order.status = 'on_approval'
             order.save()
             messages.success(request, "Фото загружено!")
+        else:
+            messages.error(request, "Не удалось загрузить фото, проверьте файл.")
     return redirect('florist_dashboard')
 
 @user_passes_test(is_courier, login_url='login')
@@ -296,14 +309,14 @@ def dashboard_api(request):
 
 def register_view(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             messages.success(request, "Регистрация прошла успешно! Добро пожаловать.")
             return redirect('catalog')
     else:
-        form = UserCreationForm()
+        form = RegisterForm()
     return render(request, 'register.html', {'form': form})
 
 def logout_view(request):
@@ -318,12 +331,26 @@ def update_cart_total(cart):
         cart.total_price = total
         cart.save()
 
+def item_json(cart, item_id, count, removed=False):
+    if cart:
+        total = cart.total_price if cart.total_price else 0
+        return JsonResponse({
+            'ok': True,
+            'item': item_id,
+            'count': count,
+            'removed': removed,
+            'total': str(total),
+        })
+    return JsonResponse({'ok': False})
+
 @login_required
 def increase_item(request, item_id):
     item = get_object_or_404(CustomBouquetItem, id=item_id, custom_bouquet__user=request.user)
     item.stems_count += 1
     item.save()
     update_cart_total(item.custom_bouquet)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return item_json(item.custom_bouquet, item.id, item.stems_count)
     return redirect('cart')
 
 @login_required
@@ -333,10 +360,14 @@ def decrease_item(request, item_id):
         item.stems_count -= 1
         item.save()
         update_cart_total(item.custom_bouquet)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return item_json(item.custom_bouquet, item.id, item.stems_count)
     else:
         cart = item.custom_bouquet
         item.delete()
         update_cart_total(cart)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return item_json(cart, item_id, 0, True)
     return redirect('cart')
 
 @login_required
@@ -345,6 +376,8 @@ def remove_item(request, item_id):
     cart = item.custom_bouquet
     item.delete()
     update_cart_total(cart)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return item_json(cart, item_id, 0, True)
     return redirect('cart')
 
 def search_api(request):
@@ -366,3 +399,25 @@ def search_api(request):
         })
 
     return JsonResponse({'bouquets': data})
+
+def bouquet_detail(request, bouquet_id):
+    bouquet = get_object_or_404(ReadyBouquet, id=bouquet_id, is_active=True)
+    return render(request, 'bouquet_detail.html', {'bouquet': bouquet})
+
+def search_page(request):
+    text = request.GET.get('q', '')
+    bouquets = ReadyBouquet.objects.filter(is_active=True)
+
+    if text:
+        bouquets = bouquets.filter(name__icontains=text)
+
+    paginator = Paginator(bouquets, 20)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'search.html', {'page_obj': page_obj, 'query': text})
+
+def about_page(request):
+    return render(request, 'about.html')
+
+def contacts_page(request):
+    return render(request, 'contacts.html')
