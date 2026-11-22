@@ -41,7 +41,9 @@ class CheckoutForm(forms.Form):
         label="Интервал доставки",
         queryset=DeliverySlot.objects.all(),
         empty_label="-- Выберите удобное время --",
-        widget=forms.Select(attrs={'class': 'form-select form-input-gap'}),
+        required=True,
+        error_messages={'required': 'Выберите интервал доставки.'},
+        widget=forms.Select(attrs={'class': 'form-select form-input-gap', 'required': 'required'}),
     )
     phone = forms.CharField(
         label="Телефон",

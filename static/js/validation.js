@@ -23,13 +23,15 @@ document.addEventListener('DOMContentLoaded', function () {
     if (form) {
         form.addEventListener('submit', function (e) {
             var problems = [];
-            var fields = form.querySelectorAll('input, textarea');
+            var fields = form.querySelectorAll('input, textarea, select');
 
             fields.forEach(function (field) {
                 var value = field.value.trim();
                 var text = (field.getAttribute('placeholder') || field.name).toLowerCase();
 
-                if (field.required && value === '') {
+                if (field.name === 'slot' && value === '') {
+                    problems.push('Выберите интервал доставки');
+                } else if (field.required && value === '') {
                     problems.push('Заполните все обязательные поля');
                 }
                 if (value.indexOf('@') !== -1 && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) {

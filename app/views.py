@@ -153,7 +153,11 @@ def checkout_view(request, bouquet_id):
 
     if request.method == 'POST' and form.is_valid():
         address = form.cleaned_data['address']
-        slot = form.cleaned_data['slot']
+        slot = form.cleaned_data.get('slot')
+
+        if not slot:
+            messages.error(request, "Выберите интервал доставки.")
+            return render(request, 'checkout.html', {'bouquet': custom_bouquet, 'slots': slots, 'form': form})
 
         order = Order.objects.create(
             user=request.user,
