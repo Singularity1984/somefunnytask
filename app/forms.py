@@ -29,6 +29,8 @@ class RegisterForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         for name in ('username', 'password1', 'password2'):
             self.fields[name].widget.attrs.update({'class': 'styled-input field-input'})
+        self.fields['password1'].widget.attrs.update({'minlength': '8'})
+        self.fields['password1'].help_text = 'Пароль должен содержать не менее 8 символов.'
 
 
 class CheckoutForm(forms.Form):

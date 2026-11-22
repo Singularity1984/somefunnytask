@@ -40,8 +40,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (text.indexOf('телефон') !== -1 && value !== '' && value.replace(/\D/g, '').length < 10) {
                     problems.push('В телефоне должно быть не меньше 10 цифр');
                 }
-                if (field.name === 'password1' && value.length > 0 && value.length <= 5) {
-                    problems.push('Пароль должен быть больше 5 символов');
+                if (field.name === 'password1' && value.length > 0 && value.length < 8) {
+                    problems.push('Пароль должен быть не менее 8 символов');
                 }
                 if (field.name === 'card_text' && value.length > 255) {
                     problems.push('Текст открытки слишком длинный, максимум 255 символов');
