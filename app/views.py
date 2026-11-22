@@ -277,13 +277,13 @@ def upload_photo(request, order_id):
 
 @user_passes_test(is_courier, login_url='login')
 def courier_dashboard(request):
-    orders = Order.objects.filter(status='approved').order_by('created_at')
+    orders = Order.objects.filter(status='approved', photos__is_approved=True).distinct().order_by('created_at')
     return render(request, 'courier.html', {'orders': orders})
 
 @user_passes_test(is_courier, login_url='login')
 def mark_delivered(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    if request.method == 'POST' and order.status == 'approved':
+    order = get_object_or_404(Order, id=order_id, status='approved')
+    if request.method == 'POST':
         order.status = 'delivered'
         order.save()
         messages.success(request, f"Заказ #{order.id} доставлен!")
