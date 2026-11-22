@@ -46,6 +46,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (field.name === 'card_text' && value.length > 255) {
                     problems.push('Текст открытки слишком длинный, максимум 255 символов');
                 }
+                if (field.type === 'file' && field.files.length > 0 && field.files[0].size > 5 * 1024 * 1024) {
+                    problems.push('Файл слишком большой, максимум 5 МБ');
+                }
             });
 
             if (problems.length > 0) {

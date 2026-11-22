@@ -3,6 +3,9 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from .models import DeliverySlot, Packaging
 
 
+MAX_PHOTO_SIZE = 5 * 1024 * 1024
+
+
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -91,12 +94,12 @@ class ConstructorForm(forms.Form):
 class PhotoUploadForm(forms.Form):
     photo = forms.ImageField(
         label="Фото букета",
-        widget=forms.ClearableFileInput(attrs={'class': 'file-input'}),
+        widget=forms.ClearableFileInput(attrs={'class': 'file-input', 'accept': 'image/*'}),
     )
 
     def clean_photo(self):
         photo = self.cleaned_data['photo']
-        if photo.size > 5 * 1024 * 1024:
+        if photo.size > MAX_PHOTO_SIZE:
             raise forms.ValidationError("Файл слишком большой, максимум 5 МБ.")
         return photo
 
